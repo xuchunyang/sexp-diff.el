@@ -31,6 +31,7 @@
 ;;; Code:
 
 (defun sexp-diff--tree-size (tree)
+  "Computes the number of atoms contained in TREE."
   (if (consp tree)
       (apply #'+ 1 (mapcar #'sexp-diff--tree-size tree))
     1))
@@ -114,6 +115,7 @@
                append (sexp-diff--render-difference r old-marker new-marker))))))
 
 (defun sexp-diff--min-edit (record &rest records)
+  "Returns record with minimum edit distance."
   (cl-loop for r in (nreverse records)
            when (<= (sexp-diff--edit-record-edit-distance r)
                     (sexp-diff--edit-record-edit-distance record))
@@ -121,6 +123,7 @@
            finally return record))
 
 (defun sexp-diff--initial-distance (function lst)
+  "Prepares initial data vectors for Levenshtein algorithm from LST."
   (let ((seq (make-vector (1+ (length lst)) (sexp-diff--compound-record-make-empty))))
     (cl-loop for i from 0
              for elt in lst
@@ -131,6 +134,9 @@
     seq))
 
 (defun sexp-diff--levenshtein-tree-edit (old-tree new-tree)
+  "Calculate the minimal edits needed to transform OLD-TREE into NEW-TREE.
+It minimizes the number of atoms in the result tree, also counting
+edit conditionals."
   (cond
    ((equal old-tree new-tree)
     (sexp-diff--unchanged-record-make old-tree))
@@ -169,6 +175,9 @@
        best-edit)))))
 
 (cl-defun sexp-diff (old-tree new-tree &key (old-marker :old) (new-marker :new))
+  "Compute a diff between OLD-TREE and NEW-TREE.
+The diff minimizes the number of atoms in the result tree, also
+counting inserted edit conditionals :new, :old."
   (sexp-diff--render-difference (sexp-diff--levenshtein-tree-edit old-tree new-tree)
                                 old-marker new-marker))
 
