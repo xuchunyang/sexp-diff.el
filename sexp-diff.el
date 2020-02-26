@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)                    ; to silence Emacs 27 byte compile warnings
+
 (defun sexp-diff--tree-size (tree)
   "Computes the number of atoms contained in TREE."
   (if (consp tree)
