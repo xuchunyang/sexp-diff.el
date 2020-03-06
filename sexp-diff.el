@@ -117,7 +117,7 @@
                append (sexp-diff--render-difference r old-marker new-marker))))))
 
 (defun sexp-diff--min-edit (record &rest records)
-  "Returns record with minimum edit distance."
+  "Return record with minimum edit distance in RECORD and RECORDS."
   (cl-loop for r in (nreverse records)
            when (<= (sexp-diff--edit-record-edit-distance r)
                     (sexp-diff--edit-record-edit-distance record))
@@ -125,7 +125,7 @@
            finally return record))
 
 (defun sexp-diff--initial-distance (function lst)
-  "Prepares initial data vectors for Levenshtein algorithm from LST."
+  "Prepare initial data vectors for Levenshtein algorithm from LST."
   (let ((seq (make-vector (1+ (length lst)) (sexp-diff--compound-record-make-empty))))
     (cl-loop for i from 0
              for elt in lst
