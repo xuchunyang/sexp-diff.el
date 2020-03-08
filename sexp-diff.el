@@ -50,6 +50,7 @@
   change)
 
 (defun sexp-diff--unchanged-record-make (change)
+  "Make `sexp-diff--unchanged-record' object from CHANGE."
   (sexp-diff--unchanged-record-create (sexp-diff--tree-size change) change))
 
 (cl-defstruct (sexp-diff--deletion-record
@@ -59,6 +60,7 @@
   change)
 
 (defun sexp-diff--deletion-record-make (change)
+  "Make `sexp-diff--deletion-record' object from CHANGE."
   (sexp-diff--deletion-record-create (1+ (sexp-diff--tree-size change)) change))
 
 (cl-defstruct (sexp-diff--insertion-record
@@ -68,6 +70,7 @@
   change)
 
 (defun sexp-diff--insertion-record-make (change)
+  "Make `sexp-diff--insertion-record' object from CHANGE."
   (sexp-diff--insertion-record-create (1+ (sexp-diff--tree-size change)) change))
 
 (cl-defstruct (sexp-diff--update-record
@@ -77,6 +80,7 @@
   old new)
 
 (defun sexp-diff--update-record-make (old new)
+  "Make a `sexp-diff--update-record' object from OLD and NEW."
   (sexp-diff--update-record-create (+ 1 (sexp-diff--tree-size old)
                                       1 (sexp-diff--tree-size new))
                                    old new))
@@ -88,17 +92,22 @@
   changes)
 
 (defun sexp-diff--compound-record-make (changes)
+  "Make a `sexp-diff--compound-record' object.
+Argument CHANGES is a list of changes."
   (sexp-diff--compound-record-create
    (apply #'+ (mapcar #'sexp-diff--edit-record-edit-distance changes))
    changes))
 
 (defun sexp-diff--compound-record-make-empty ()
+  "Make a empty `sexp-diff--compound-record' object."
   (sexp-diff--compound-record-make '()))
 
 (defun sexp-diff--compound-record-make-extend (r0 record)
+  "Make a `sexp-diff--compound-record' from R0 and RECORD."
   (sexp-diff--compound-record-make (cons record (sexp-diff--get-change r0))))
 
 (defun sexp-diff--get-change (record)
+  "Get change from RECORD."
   (pcase record
     ((cl-struct sexp-diff--unchanged-record  change)  change)
     ((cl-struct sexp-diff--deletion-record   change)  change)
@@ -106,6 +115,7 @@
     ((cl-struct sexp-diff--compound-record   changes) changes)))
 
 (defun sexp-diff--render-difference (record old-marker new-marker)
+  "Render difference in RECORD with OLD-MARKER and NEW-MARKER."
   (pcase record
     ((cl-struct sexp-diff--insertion-record  change) (list new-marker change))
     ((cl-struct sexp-diff--deletion-record   change) (list old-marker change))
@@ -125,7 +135,8 @@
            finally return record))
 
 (defun sexp-diff--initial-distance (function lst)
-  "Prepare initial data vectors for Levenshtein algorithm from LST."
+  "Prepare initial data vectors for Levenshtein algorithm from LST.
+Argument FUNCTION will be applied to each element of LST."
   (let ((seq (make-vector (1+ (length lst)) (sexp-diff--compound-record-make-empty))))
     (cl-loop for i from 0
              for elt in lst
