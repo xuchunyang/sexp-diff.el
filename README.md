@@ -1,4 +1,5 @@
 # sexp-diff
+[![Melpa](https://melpa.org/packages/sexp-diff-badge.svg)](https://melpa.org/#/sexp-diff)
 
 This package provides an S-expression-aware diffing tool based on Levenshtein-like tree edit distance.
 
